@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 
+import { Spinner } from "@bigbinary/neetoui";
 import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -17,17 +18,40 @@ const debounce = (func, delay) => {
 const MovieSearch = () => {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const fetchMovies = async searchQuery => {
-    const response = await axios.get(
-      `https://www.omdbapi.com/?apikey=your_api_key&s=${searchQuery}`
-    );
-    setMovies(response.data.Search || []);
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(
+        `https://www.omdbapi.com/?apikey=your_api_key&s=${searchQuery}`
+      );
+      if (response.data.Response === "False") {
+        if (response.data.Error === "Too many results.") {
+          setError("Too many results. Please refine your search.");
+        } else {
+          setError("No movies found.");
+        }
+        setMovies([]);
+      } else {
+        setMovies(response.data.Search || []);
+      }
+    } catch (error) {
+      setError(error ? "An error occurred while fetching the data." : "");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const debouncedSearch = useCallback(debounce(fetchMovies, 500), []);
+  // Debounce function to limit API calls
+  const debouncedSearch = useCallback(
+    debounce(value => fetchMovies(value), 500),
+    []
+  );
 
   const handleChange = e => {
     const value = e.target.value;
@@ -56,6 +80,8 @@ const MovieSearch = () => {
         value={query}
         onChange={handleChange}
       />
+      {loading && <Spinner size="large" />}
+      {error && <p className="error-message">{error}</p>}
       <MovieList movies={movies} />
     </div>
   );
