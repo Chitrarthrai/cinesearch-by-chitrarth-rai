@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 
+import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
+
+import MovieList from "./MovieList";
 
 const debounce = (func, delay) => {
   let timer;
@@ -13,22 +16,25 @@ const debounce = (func, delay) => {
 
 const MovieSearch = () => {
   const [query, setQuery] = useState("");
+  const [movies, setMovies] = useState([]);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const handleSearch = searchQuery => {
-    // Reflect search query in the URL
-    navigate(`/?query=${searchQuery}`);
-    // Logic to call the OMDb API can go here
+  const fetchMovies = async searchQuery => {
+    const response = await axios.get(
+      `https://www.omdbapi.com/?apikey=your_api_key&s=${searchQuery}`
+    );
+    setMovies(response.data.Search || []);
   };
 
-  const debouncedSearch = useCallback(debounce(handleSearch, 500), []);
+  const debouncedSearch = useCallback(debounce(fetchMovies, 500), []);
 
   const handleChange = e => {
     const value = e.target.value;
     setQuery(value);
     if (value.trim() !== "") {
       debouncedSearch(value);
+      navigate(`/?query=${value}`);
     }
   };
 
@@ -38,17 +44,6 @@ const MovieSearch = () => {
       setQuery(query);
       debouncedSearch(query);
     }
-
-    const handleSlashKey = event => {
-      if (event.key === "/") {
-        event.preventDefault();
-        document.getElementById("search-input").focus();
-      }
-    };
-
-    document.addEventListener("keydown", handleSlashKey);
-
-    return () => document.removeEventListener("keydown", handleSlashKey);
   }, [searchParams, debouncedSearch]);
 
   return (
@@ -61,6 +56,7 @@ const MovieSearch = () => {
         value={query}
         onChange={handleChange}
       />
+      <MovieList movies={movies} />
     </div>
   );
 };
