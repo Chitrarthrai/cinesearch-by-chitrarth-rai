@@ -1,4 +1,5 @@
 module.exports = {
+  tailwindConfig: "./tailwind.config.js",
   trailingComma: "es5",
   arrowParens: "avoid",
   printWidth: 80,
@@ -12,5 +13,4 @@ module.exports = {
   bracketSameLine: false,
   proseWrap: "always",
   endOfLine: "lf",
-  tailwindConfig: "./tailwind.config.js",
 };
