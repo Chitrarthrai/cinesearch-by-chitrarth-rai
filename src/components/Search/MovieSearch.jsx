@@ -4,6 +4,7 @@ import { Close } from "@bigbinary/neeto-icons";
 import { Input, Spinner } from "@bigbinary/neetoui";
 import axios from "axios";
 
+import { useMovie } from "../../context/MovieContext";
 import PreviewCard from "../Movie/PreviewCard";
 
 const debounce = (func, delay) => {
@@ -17,7 +18,8 @@ const debounce = (func, delay) => {
 
 const MovieSearch = () => {
   const [isLoading, setIsLoading] = useState(false);
-
+  /* eslint-disable-next-line */
+  const { setCurrentMovie, history, setHistory } = useMovie();
   const [movieList, setMovieList] = useState([]);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
