@@ -15,13 +15,13 @@ const PreviewCard = ({ info }) => {
 
   return (
     <div
-      className={`min-h-55 flex w-40 cursor-pointer flex-col items-center gap-1 rounded-md border-4 p-2 shadow-md transition-transform duration-300 ease-linear hover:scale-105 ${
+      className={`min-h-55 mb-4 flex w-40 cursor-pointer flex-col items-center gap-1 rounded-md border-4 p-2 shadow-md transition-transform duration-300 ease-linear hover:scale-105 ${
         isSelected ? "border-lightblue bg-blue" : "border-lightblue"
       }`}
       onClick={handleClick}
     >
       <img
-        alt=""
+        alt={info.Title}
         className="h-[70%] w-[100%] rounded-sm object-contain"
         src={info.Poster}
       />
